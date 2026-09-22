@@ -1,0 +1,28 @@
+#include <stdio.h>
+
+int main(void)
+{
+	char c; // first input character, must be ascii, so stored in char 
+	unsigned int temp; // temperatur integer, only positive
+	int log[10]; // array with all temperature logs
+	int count = 0; // keep track of array index
+
+	scanf("%c", &c) == 1;
+	switch(c){
+		case 'T':
+			if (scanf("%d", &temp) == 1) {
+				log[count] = temp;
+				count ++;
+				printf("Received Temperature: %d", temp);
+			}
+			else printf("Input Error");
+			break;
+		case 'L':
+			printf("Log: %d entries\", count";
+			for (int i=0; i<=count; i++){
+				printf("Temperature: %d\n", log[i];
+			}
+			break;
+	}
+			       return0;
+}
