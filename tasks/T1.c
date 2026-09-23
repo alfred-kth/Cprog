@@ -76,10 +76,7 @@ int main(void)
 			default:
 				printf("Input Error\n");
 		}
-		
-		// clear the rest of the input characters (newline, extra characters added)
-		int ch;
-		while ((ch = getchar()) != '\n' && ch != EOF){}
+
 	
 	}
 	
