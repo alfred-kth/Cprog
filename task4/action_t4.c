@@ -1,0 +1,134 @@
+#include "t4.h"
+#include <stdio.h>
+#include <stdlib.h>
+	
+void action(unsigned int type, unsigned int temp, unsigned int humidity, SensorLog *log) 
+{
+	// look at type to determine what the action should be
+	switch(type){
+		
+		case 0:
+			// check if log is full
+			if (log->count == log->size){
+				log->size += log->increment;
+				
+				// temporary variables incase of realloc failure
+				unsigned int *new_temp;
+				unsigned int *new_humidity;
+				
+				// use realloc to allocate a new, bigger space for the arrays
+				new_temp = realloc(log->temp, log->size * sizeof *log->temp);
+				
+				// quit program on failure
+				if (!new_temp) {
+					free(log->temp);
+					free(log->humidity);
+					exit(1);
+				}
+				log->temp = new_temp; // update the struct pointer with new array
+				
+				// same thing again with humidity log
+				new_humidity = realloc(log->humidity, log->size * sizeof *log->humidity);
+				if (!new_humidity) {
+					free(log->temp);
+					free(log->humidity);
+					exit(1);	
+				}
+				log->humidity = new_humidity;
+				
+				printf("Log Size Expanded To: %u\n", log->size);
+			}
+			
+			// add temperature to log if log is not full
+			log->temp[log->count] = temp;
+			log->humidity[log->count] = humidity;
+			log->count ++;
+			printf("Received Temperature: %u\n", temp);
+			printf("Received Humidity: %u\n", humidity);
+			break;
+			
+		case 2:
+			// check if anything in log
+			if (log->count == 0){
+				printf("Average Temperature: N/A\n");
+				printf("Average Humidity: N/A\n");
+				break;
+			}
+			
+			// Print average Temperature
+			float average = 0;
+			for (int i=0; i<log->count; i++) average += log->temp[i];
+			average = average/log->count;
+			printf("Average Temperature: %.2f\n", average);
+			
+			// Print average Humidity
+			average = 0;
+			for (int i=0; i<log->count; i++) average += log->humidity[i];
+			average = average/log->count;
+			printf("Average Humidity: %.2f\n", average);
+			break;
+
+		case 3:
+			// check if anything in log
+			if (log->count == 0){
+				printf("Minimum Temperature: N/A\n");
+				printf("Minimum Humidity: N/A\n");
+				break;
+			}
+			
+			// Print minimum Temperature
+			int minimum = log->temp[0];
+			for (int i=1; i<log->count; i++) if (minimum>log->temp[i]) minimum = log->temp[i];
+			printf("Minimum Temperature: %d\n", minimum);
+			
+			// Print minimum Humidity
+			minimum = log->humidity[0];
+			for (int i=1; i<log->count; i++) if (minimum>log->humidity[i]) minimum = log->humidity[i];
+			printf("Minimum Humidity: %d\n", minimum);
+			
+			break;
+
+		case 4:
+			// check if anything in log
+			if (log->count == 0){
+				printf("Maximum Temperature: N/A\n");
+				printf("Maximum Humidity: N/A\n");
+				break;
+			}
+			
+			// Print maximum Temperature
+			int maximum = log->temp[0];
+			for (int i=1; i<log->count; i++) if (maximum<log->temp[i]) maximum = log->temp[i];
+			printf("Maximum Temperature: %d\n", maximum);
+			
+			// Print maximum Humidity
+			maximum = log->humidity[0];
+			for (int i=1; i<log->count; i++) if (maximum<log->humidity[i]) maximum = log->humidity[i];
+			printf("Maximum Humidity: %d\n", maximum);
+			break;
+
+		case 5:
+			// iterate through and print every value in log
+			printf("Log: %d entries\n", log->count);
+			for (int i=0; i<log->count; i++){
+				printf("Temperature: %d; Humidity: %d\n", log->temp[i], log->humidity[i]);
+			}
+			break;
+
+		case 6:
+			// quit program by running return
+			printf("Exiting...\n");
+			free(log->temp);
+			free(log->humidity);
+			exit(0);
+			
+		default: // any other input than above stated is an error
+			printf("Input Error\n");
+			
+	}
+	
+}
+
+
+
+
